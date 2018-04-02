@@ -60,5 +60,17 @@ class StaffAdminController extends Controller
         return redirect()->route('adminstaff.newcategories');
     }
 
+    /**
+     * Show the products page.
+     *
+     * @return \Illuminate\Http\Response
+     */
+     public function showProducts()
+     {
+       // Get a instance of category
+      $cat = Category::all();
+      return view('staffadmin.pages.Product')->with('cat', $cat);
+     }
+
 
 }
