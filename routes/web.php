@@ -39,6 +39,17 @@ Route::post('localadmin/login', 'AdminLoginController@login')->name('admin.login
 Route::get('localadmin/user', 'AdminController@findUser')->name('admin.findUser');
 //localadmin dashboard after login.
 Route::get('localadmin/dashboard', 'AdminController@index')->name('admin.dashboard');
+//localadmin get user data from database
+Route::get('localadmin/getuserlist','AdminController@showuserlist')->name('localadmin.userlist');
+//localadmin make the user admin
+Route::post('localadmin/makeasadmin','AdminController@makeasadmin');
+//localadmin remove the user admin
+Route::post('localadmin/removeadmin','AdminController@removeadmin');
+
+
+
+
+
 
 //admin & Staff routes
 //Display available categories

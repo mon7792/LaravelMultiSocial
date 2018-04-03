@@ -10,10 +10,10 @@
       <li class="breadcrumb-item"><a href="{{ route('home')}}">Dashboard</a></li>
     </ul>
   </div>
-  @if($cat->count() == 0)
-    <h1>No Categories currently entered in the system</h1>
-  @else
     <div class="row justify-content-center">
+      @if($cat->count() == 0)
+        <h1>No Categories currently entered in the system</h1>
+      @else
       <div class="col-6 table-responsive" >
         <table class="table table-striped">
           <thead>
@@ -40,8 +40,9 @@
           </tbody>
         </table>
       </div>
+      @endif
     </div>
-  @endif
+
 
   <div class="row justify-content-center">
     <form  action="{{ route('adminstaff.newcategories') }}" method="POST">
@@ -75,7 +76,7 @@
 </div>
 @endsection
 
-@script
+@section('script')
 <script type="text/javascript">
   window.onload = function(){
     $('#deleteButton').click(function(){
@@ -85,7 +86,5 @@
         $('#deleteForm').attr('action',formAction);
     });
   }
-
-
 </script>
-@endscript
+@endsection
