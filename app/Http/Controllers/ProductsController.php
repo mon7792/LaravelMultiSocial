@@ -55,6 +55,11 @@ class ProductsController extends Controller
         'cover_image' => 'image|nullable|max:1999'
       ]);
       //
+
+
+
+
+
       if($request->hasFile('cover_image'))
       {
         //get file name with extension
@@ -72,11 +77,6 @@ class ProductsController extends Controller
         $fileNameToStore = 'noimage.jpg';
       }
 
-
-
-
-
-
       // deal with the product category and change it to number
       $productCategoryId = Category::where('category',$request->input('productCategory'))->get();
       //add
@@ -93,8 +93,8 @@ class ProductsController extends Controller
       $productImages->product_id =  $request->input('productID');
       $productImages->cover_image = $fileNameToStore;
       $productImages->save();
-      //redirect
-      return redirect('/products') ;
+      //redirect  to adminstaff dashboard
+      return redirect()->route('adminstaff.products') ;
     }
 
     /**

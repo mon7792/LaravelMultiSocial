@@ -1,5 +1,7 @@
 @extends('staffadmin.layouts.app')
-
+@section('meta')
+  <meta name="csrf-token" content="{{ csrf_token() }}">
+@endsection
 @section('admincontent')
           <div class="app-title">
             <div>
@@ -27,67 +29,16 @@
                 </div>
                 <div class="bs-component">
                   <div class="list-group" id="highlight1">
-
-                    <a class="list-group-item list-group-item-action active" id="Instruments" onclick="hone('Instruments')" href="#" >Instruments</a>
-                    <a class="list-group-item list-group-item-action" id="Music" onclick="hone('Music')" href="#">Music</a>
-                    <a class="list-group-item list-group-item-action" id="Utensils" onclick="hone('Utensils')" href="#">Utensils</a>
-                    <a class="list-group-item list-group-item-action" id="Electronics" onclick="hone('Electronics')" href="#">Electronics</a>
-                    <a class="list-group-item list-group-item-action" id="Costumes" onclick="hone('Costumes')" href="#">Costumes</a>
+                    {{--  Loop through the categories--}}
+                    @foreach ($cat as $ct)
+                        <a class="list-group-item list-group-item-action" id="_{{ $ct->id }}" onclick="getproduct('_{{ $ct->id }}')" href="#" >{{ $ct->category }}</a>
+                    @endforeach
                   </div>
 
                 </div>
             </div>
 
-            <div class="col-9 table-responsive " >
-              <table class="table table-striped">
-                <thead>
-                  <tr>
-                    <th>Product Id</th>
-                    <th>Product Name</th>
-                    <th>Description</th>
-                    <th>Edit</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-
-                    <td style="padding:5px">
-                      <div class="media">
-                            <a href="#" class="pull-left">
-                              <img src="img/IMG.jpg" class="media-photo" style="width:40px;height:40px">
-                            </a>
-                      </div>
-                    </td>
-                    <td>The Hunger Games</td>
-                    <td>HIIII</td>
-                    <td>
-
-                      <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#productrenamemodal"><i class="fa fa-pencil-square-o"></i>
-                        Rename
-                      </button>
-                      <button class="btn btn-danger"><i class="fa fa-trash-o"></i>Delete</button>
-
-
-                    </td>
-                  </tr>
-                  <tr>
-
-                    <td>2</td>
-                    <td>The Lord of the Rings</td>
-                    <td>TTTIIII</td>
-                    <td><button class="btn btn-primary"><i class="fa fa-pencil-square-o"></i>Rename</button>
-                    <button class="btn btn-danger"><i class="fa fa-trash-o"></i>Delete</button></td>
-                  </tr>
-                  <tr>
-
-                    <td>3</td>
-                    <td>Star Wars</td>
-                    <td>IIII</td>
-                    <td><button class="btn btn-primary"><i class="fa fa-pencil-square-o"></i>Rename</button>
-                    <button class="btn btn-danger"><i class="fa fa-trash-o"></i>Delete</button></td>
-                  </tr>
-                </tbody>
-              </table>
+            <div class="col-9 table-responsive" id="productResult" >
             </div>
           @else
             <h2>No Categories currently in the system</h2>
@@ -129,9 +80,8 @@
                               </button>
                             </div>
                             <div class="modal-body">
-              <form method="POST"  enctype="multipart/form-data">
+              <form method="POST" action="{{ url('products')}}"  enctype="multipart/form-data">
           			<!-- Name of the product-->
-                {{-- action="{{ url('products')}}" --}}
                 {{ csrf_field() }}
           			<div class="form-group">
           			  <label for="name">Name:</label>
@@ -148,9 +98,9 @@
           			<div class="form-group">
           				<label for="category">Category:</label>
           				<select class="form-control" id="productCategory" name="productCategory">
-          					{{-- @foreach($category as $cat)
-          					<option>{{ $cat->category }}</option>
-          					@endforeach --}}
+          					@foreach($cat as $ct)
+          					<option>{{ $ct->category }}</option>
+          					@endforeach
           				</select>
           			</div>
 
@@ -163,11 +113,12 @@
                   <label for="img">Upload Images:</label>
                   <input class="form-control" type="file" name="cover_image" id="file">
           			</div>
-          		</form>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="submit" class="btn btn-default"><b>Submit</b></button>
-              </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                  <button type="submit" class="btn btn-default" id="newProductBtn"><b>Add</b></button>
+                </div>
+              </form>
+
               </div>
               </div>
               </div>
@@ -175,9 +126,105 @@
             <!-- Modal ending here -->
 
 @endsection
+
 @section('script')
 
 <script type="text/javascript">
+
+// function to get the product
+function getproduct(idval)
+{
+  // handle the front end highlighting
+  var x= document.getElementById("highlight1");
+  Array.prototype.forEach.call(x.children, i => {
+      i.classList.remove("active");});
+      var x= document.getElementById(idval);
+      x.classList.add("active");
+  // string handling
+  var categorgyId = idval.split("_")[1];
+  console.log(categorgyId);
+
+  //ajax query to get product
+
+  $.ajax({
+  type : 'get',
+  url : '{{route('adminstaff.products')}}',
+  data:{'categoryId':categorgyId},
+  success:function(data){
+  console.log(data);
+  $('#productResult').empty().html(data);
+  }
+  });
+
+
+
+
+};
+
+// Script to get the products for a particular category
+$('#searchBtn').click(function(){
+  // get the value of the input field
+  $value=$('#searchbox').val();
+  //check the input field then only fire ajax call
+  if($value)
+  {
+    $.ajax({
+    type : 'get',
+    url : '{{route('localadmin.userlist')}}',
+    data:{'search':$value},
+    success:function(data){
+    $('#userlistdata').empty().html(data);
+    }
+    });
+  }
+  else
+  {
+    // send an alert to input a value
+    alert('enter the search parameter');
+  }
+
+
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//
+// $.ajaxSetup({
+//   headers: {
+//     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+//   }
+// });
+// // get the input values
+// $productName = $('#productName').val();
+// $productDescription = $('#productDescription').val();
+//
+// // submit the values
+// $("#newProductBtn").click(function(){
+//   console.log('Hello');
+//   $.ajax({
+//   type : 'post',
+//   url : '{{route('products.store')}}',
+//   data:{
+//     'search': 'welcome'
+//   },
+//   success:function(data){
+//   console.log(data)
+//   }
+//   });
+// });
+
+
 function hone(idval)
 {
   var x= document.getElementById("highlight1");
@@ -186,5 +233,8 @@ function hone(idval)
       var x= document.getElementById(idval);
       x.classList.add("active");
 };
+
+
+
 </script>
 @endsection
