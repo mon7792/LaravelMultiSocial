@@ -25,18 +25,12 @@
 					<label for="category">Category:</label>
 					<select class="form-control" id="productCategory" name="productCategory">
 						@foreach($category as $cat)
-						<option @if($cat->category == $categorySelected) selected @endif>{{ $cat->category }}</option>
+						<option  @if($cat->category == $categorySelected) selected @endif>{{ $cat->category }}</option>
 						@endforeach
 					</select>
 				</div>
 
-				<!-- Required Item -->
-				<div class="form-group">
-				<label for="requiredItem">Required Item:</label>
-				<span class="label label-primary">Primary</span>
-				<span class="label label-primary">Secondary</span>
-				<span class="label label-primary">Tertiary</span>
-				</div>
+
 
 				<!-- Product ID -->
 				<div class="form-group">

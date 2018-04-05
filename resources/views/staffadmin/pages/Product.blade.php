@@ -1,7 +1,21 @@
 @extends('staffadmin.layouts.app')
+@include('staffadmin.modals.editProduct')
+@include('staffadmin.modals.addProduct')
+@include('staffadmin.modals.singleProductView')
 @section('meta')
   <meta name="csrf-token" content="{{ csrf_token() }}">
 @endsection
+@section('style')
+<style>
+#singleProductViewImg {
+    display: block;
+    margin: 0 auto;
+}
+</style>
+
+@endsection
+
+
 @section('admincontent')
           <div class="app-title">
             <div>
@@ -46,90 +60,104 @@
             <a class="btn btn-primary btn-lg" href="{{ route('adminstaff.newcategories') }}"><i class="fa fa-plus-circle"></i>Add New Category</a>&nbsp;
           @endif
           </div>
-          {{-- Edit Model Start --}}
-          <div class="modal fade" id="productrenamemodal" tabindex="-1" role="dialog" aria-labelledby="productrenamemodalTitle" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered" role="document">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <h5 class="modal-title" id="productrenamemodalTitle">Edit Name</h5>
-                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                  </button>
-                </div>
-                <div class="modal-body">
-                  ..
-                  <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="button" onclick="submitform()" class="btn btn-info"><b>Submit</b></button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          {{-- Edit Model End --}}
 
-          {{-- Add Product Modal --}}
-          <!-- Modal -->
-            <div class="modal fade" id="addproductmodal" tabindex="-1" role="dialog" aria-labelledby="addproductmodaltitle" aria-hidden="true">
-                        <div class="modal-dialog modal-dialog-centered" role="document">
-                          <div class="modal-content">
-                            <div class="modal-header">
-                              <h5 class="modal-title" id="addproductmodaltitle">Add Product</h5>
-                              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                              </button>
-                            </div>
-                            <div class="modal-body">
-              <form method="POST" action="{{ url('products')}}"  enctype="multipart/form-data">
-          			<!-- Name of the product-->
-                {{ csrf_field() }}
-          			<div class="form-group">
-          			  <label for="name">Name:</label>
-          			  <input type="text" class="form-control" id="productName" placeholder="Enter product name" name="productName">
-          			</div>
 
-          			<!-- Description of the product-->
-          			<div class="form-group">
-          			  <label for="description">Description:</label>
-          			  <textarea class="form-control" rows="5" id="productDescription" name="productDescription" placeholder="Enter product description"></textarea>
-          			</div>
 
-          			<!-- Category DropDown -->
-          			<div class="form-group">
-          				<label for="category">Category:</label>
-          				<select class="form-control" id="productCategory" name="productCategory">
-          					@foreach($cat as $ct)
-          					<option>{{ $ct->category }}</option>
-          					@endforeach
-          				</select>
-          			</div>
+{{--  Display single product view MODAL--}}
+<!-- Style -->
 
-          			<!-- Product ID -->
-          			<div class="form-group">
-          			  <label for="productid">Product ID:</label>
-          			  <input type="text" class="form-control" id="productID" placeholder="Enter product id" name="productID">
-          			</div>
-          			<div class="form-group">
-                  <label for="img">Upload Images:</label>
-                  <input class="form-control" type="file" name="cover_image" id="file">
-          			</div>
-                <div class="modal-footer">
-                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                  <button type="submit" class="btn btn-default" id="newProductBtn"><b>Add</b></button>
-                </div>
-              </form>
 
-              </div>
-              </div>
-              </div>
-          </div>
-            <!-- Modal ending here -->
 
 @endsection
 
 @section('script')
 
 <script type="text/javascript">
+
+//global variable yo store selected category
+
+//function to append the selected tag
+function selectedCategory(selectCat)
+{
+  //loop through each category
+  $("#product_category option").each(function()
+  {
+    //check the current category is selected
+    if(selectCat === $(this).val())
+    {
+      $(this).prop('selected', true);
+    }
+  });
+
+}
+
+
+
+
+
+//function to pass the product ID to Edit modals
+function editProductFunc(id)
+{
+  var route = "{{ url('products/')}}" + "/"+ id;
+
+  $('#editProductForm').attr('action',route);
+  $.ajax({
+  type : 'get',
+  url : '{{route('adminstaff.products.edit')}}',
+  data:{'productID':id},
+  dataType:'json',
+  success:function(data){
+    console.log(data);
+    //set the values of the edit form
+    $('#productName').val(data[0].name);
+    $('#productDescription').val(data[0].description);
+    $('#productid').empty().html(data[0].productID);
+
+    // check the category selected
+
+    // $('#singleProductId').empty().html(data[0].id);
+    //
+    // // console.log();
+    selectedCategory(data[1]);
+  }
+});
+}
+
+
+//function to view the single product view
+function singleProductViewFunc(id)
+{
+  // ajax get call to single product
+  var imgRoute = "/storage/cover_images/";
+  $.ajax({
+  type : 'get',
+  url : '{{route('adminstaff.products')}}',
+  data:{'productID':id},
+  dataType:'json',
+  success:function(data){
+    console.log(data);
+    $('#singleProductId').empty().html(data[0].id);
+    $('#singleProductName').empty().html(data[0].name);
+    $('#singleProductDescription').empty().html(data[0].description);
+    $('#singleProductViewImg').attr('src',imgRoute + data[1].cover_image);
+    // console.log();
+  }
+  });
+
+}
+
+
+
+// $(".singleProductViewClass").click(function(){
+//   console.log('single product View');
+// });
+
+
+
+
+
+
+
 
 // function to get the product
 function getproduct(idval)
@@ -151,7 +179,7 @@ function getproduct(idval)
   url : '{{route('adminstaff.products')}}',
   data:{'categoryId':categorgyId},
   success:function(data){
-  console.log(data);
+
   $('#productResult').empty().html(data);
   }
   });

@@ -32,9 +32,7 @@
                 <td><button class="btn btn-primary"><i class="fa fa-pencil-square-o"></i>Rename</button></td>
                 <td>
                   <button class="btn btn-danger" data-toggle="modal" data-target="#myDeleteModal" id="deleteButton" value="{{$ct->id}}"><i class="fa fa-trash-o"></i>Delete</button>
-
                 </td>
-
               </tr>
             @endforeach
           </tbody>

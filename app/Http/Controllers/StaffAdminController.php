@@ -71,7 +71,7 @@ class StaffAdminController extends Controller
        // Get a instance of category
       $cat = Category::all();
       // check if the request is AJAX
-      if(request()->ajax())
+      if(request()->ajax() and $request->has('categoryId'))
       {
         $cat_id = $request->categoryId;
         $products = Product::where('category', $cat_id)
@@ -91,7 +91,35 @@ class StaffAdminController extends Controller
         // $productImage = ProductImages::where('product_id', '=', $product->productID)->firstOrFail();
         return view('staffadmin.ajax.productTable', compact('products'));
       }
+      if(request()->ajax() and $request->has('productID'))
+      {
+        $prodID = $request->productID;
+        $products = Product::find($prodID);
+        $productImg = $products->ProductImages->where('product_id', $products->productID)->first();
+        // ->first()->cover_image;
+        // $prod->ProductImages->where('product_id', $prod->productID)->first()->cover_image
+
+        // ->where('product_id', $request->productID)->first()->cover_image;
+        // ->where('product_id', $prod->productID)->first()->cover_image;
+        return json_encode(array($products, $productImg));
+      }
       return view('staffadmin.pages.Product')->with('cat', $cat);
+     }
+     public function editProduct(Request $request)
+     {
+
+       $category = Category::all();
+       if(request()->ajax() and $request->has('productID'))
+       {
+         $product = Product::find($request->productID);
+         $categorySelected = Category::find($product->category)->category;
+         return json_encode(array($product, $categorySelected));
+       }
+
+         $product = Product::find($id);
+         // categorySelected: is to find the category a particular product belongs to
+         $categorySelected = Category::find($product->category)->category;
+         return view('products.edit', compact('product','category', 'categorySelected'));
      }
 
 

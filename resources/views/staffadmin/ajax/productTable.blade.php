@@ -13,18 +13,17 @@
     <tr>
       <td style="padding:5px">
         <div class="media">
-              <a href="#" class="pull-left">
-                {{-- <img src="/storage/cover_images/{{$productImage->cover_image}}" class="media-photo" style="width:40px;height:40px"> --}}
-                {{ $prod->ProductImages->where('product_id', $prod->productID)->first()->cover_image }}
+              <a href="#" class="pull-left singleProductView" onclick="singleProductViewFunc({{$prod->id}})">
+                <img src="/storage/cover_images/{{ $prod->ProductImages->where('product_id', $prod->productID)->first()->cover_image }}" class="media-photo" style="width:40px;height:40px">
               </a>
         </div>
       </td>
-      <td>{{ $prod->name }}</td>
+      <td><a href="#" data-toggle="modal" data-target="#product_view" class="singleProductView" onclick="singleProductViewFunc({{$prod->id}})"> {{ $prod->name }}</a></td>
       <td>{{ str_limit($prod->description,10) }}...</td>
       <td>
 
-        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#productrenamemodal"><i class="fa fa-pencil-square-o"></i>
-          Rename
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#productrenamemodal" id="editProduct" onclick="editProductFunc({{$prod->id}})" ><i class="fa fa-pencil-square-o"></i>
+          edit
         </button>
         <button class="btn btn-danger"><i class="fa fa-trash-o"></i>Delete</button>
 

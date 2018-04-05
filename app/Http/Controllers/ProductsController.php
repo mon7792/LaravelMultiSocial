@@ -13,7 +13,7 @@ class ProductsController extends Controller
 
     public function __construct()
     {
-        $this->middleware('checkadmin', ['except' => ['index','show']]);
+        $this->middleware('checkstaffadmin', ['except' => ['index','show']]);
     }
     /**
      * Display a listing of the resource.
@@ -162,19 +162,21 @@ class ProductsController extends Controller
       // deal with the product category and change it to number
       $productCategoryId = Category::where('category',$request->input('productCategory'))->get();
       //add
+
       $product = Product::find($id);
+      //store the productID
+      $productID = $product->productID;
       $product->name = $request->input('productName');
       $product->description = $request->input('productDescription');
       $product->category = $productCategoryId[0]->id;
       // net to think of mechanism to include the required item
-      $product->requiredItem = "primary";
-      $product->productID = $request->input('productID');
       $product->save();
 
       #Update the product of the Image
-      $productImage = ProductImages::where('product_id',$request->input('productID'))->firstOrFail();
+      $productImage = ProductImages::where('product_id',$productID)->firstOrFail();
       // return $productImage;
       // handling product database
+      // return 1;
       if($request->hasFile('cover_image'))
       {
        $productImage->cover_image = $fileNameToStore;
@@ -182,7 +184,7 @@ class ProductsController extends Controller
       $productImage->save();
       // here handle for the photo update if the cover_image changes
 
-      return redirect('/products') ;
+      return redirect()->route('adminstaff.products') ;
     }
 
     /**

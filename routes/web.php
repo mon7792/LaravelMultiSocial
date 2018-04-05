@@ -63,3 +63,6 @@ Route::delete('admin/categories/delete/{id}', 'StaffAdminController@destroyCateg
 
 //Display available categories
 Route::get('admin/products', 'StaffAdminController@showProducts')->name('adminstaff.products');
+
+//Edit Product for edit
+Route::get('admin/products/edit', 'StaffAdminController@editProduct')->name('adminstaff.products.edit');
